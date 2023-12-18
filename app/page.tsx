@@ -1,18 +1,22 @@
-import AuthForm from './auth-form'
+import AuthForm from './auth-form';
+import Footer from "./components/Footer";
+import Header from "./components/Header";
 
-export default function Home() {
+export default async function Home() {
   return (
-    <div className="row">
-      <div className="col-6">
-        <h1 className="header">Supabase Auth + Storage</h1>
-        <p className="">
-          Experience our Auth and Storage through a simple profile management example. Create a user
-          profile and upload an avatar image. Fast, simple, secure.
-        </p>
+    <div className="flex-1 w-full flex flex-col gap-20 items-center">
+      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
+          <p className="text-2xl font-bold ">Sleep Ranking</p>
+          {<AuthForm />}
+        </div>
+      </nav>
+
+      <div className="animate-in flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
+        <Header />
       </div>
-      <div className="col-6 auth-widget">
-        <AuthForm />
-      </div>
+
+      <Footer />
     </div>
-  )
+  );
 }

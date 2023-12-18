@@ -1,20 +1,53 @@
-'use client'
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Database } from './database.types'
 
-export default function AuthForm() {
-  const supabase = createClientComponentClient<Database>()
-  return (
-    <Auth
-      supabaseClient={supabase}
-      view="magic_link"
-      appearance={{ theme: ThemeSupa }}
-      theme="dark"
-      showLinks={false}
-      providers={[]}
-      redirectTo="http://localhost:3000/auth/callback"
-    />
+
+import { createClient } from '@/utils/supabase/server'
+import Link from 'next/link'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+
+
+
+export default async function AuthForm() {
+  const cookieStore = cookies()
+  const supabase = createClient(cookieStore)
+
+
+  const goProfile = async () => {
+    'use server'
+
+   
+    return redirect('/account')
+  }
+  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const signOut = async () => {
+    'use server'
+
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore)
+    await supabase.auth.signOut()
+    return redirect('/login')
+  }
+
+  return user ? (
+    <div className="flex items-center gap-4">
+      Hey, {user.email}!
+      <form action={goProfile}>
+        <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
+          Profile
+        </button>
+      </form>
+    </div>
+  ) : (
+    <Link
+      href="/login"
+      className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+    >
+      Sign Up/Login
+    </Link>
   )
 }
+
