@@ -20,12 +20,19 @@ export default async function AuthButton() {
     return redirect('/login')
   }
 
+  const goProfile= async () => {
+    'use server'
+    return redirect('/account')
+  }
+
+  
+
   return user ? (
     <div className="flex items-center gap-4">
       Hey, {user.email}!
-      <form action={signOut}>
+      <form action={goProfile}>
         <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-          Logout
+          Profile
         </button>
       </form>
     </div>
@@ -34,7 +41,7 @@ export default async function AuthButton() {
       href="/login"
       className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
     >
-      Login
+      Login/Sign Up
     </Link>
   )
 }

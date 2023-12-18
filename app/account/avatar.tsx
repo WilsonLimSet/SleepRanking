@@ -65,28 +65,32 @@ export default function Avatar({
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center">
       {avatarUrl ? (
         <Image
           width={size}
           height={size}
           src={avatarUrl}
           alt="Avatar"
-          className="avatar image"
+          className="rounded-full"
           style={{ height: size, width: size }}
         />
       ) : (
-        <div className="avatar no-image" style={{ height: size, width: size }} />
+        <div className={`h-${size} w-${size} bg-gray-200 rounded-full flex items-center justify-center`}>
+          {/* Placeholder in case there's no image */}
+          <span className="text-gray-400 text-sm">No image</span>
+        </div>
       )}
-      <div style={{ width: size }}>
-        <label className="button primary block" htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
+      <div className={`mt-4`}>
+        <label
+          htmlFor="single"
+          className={`block w-full text-center px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer 
+                      hover:bg-blue-600 disabled:bg-blue-300 ${uploading ? 'opacity-50' : 'opacity-100'}`}
+        >
+          {uploading ? 'Uploading ...' : 'Choose profile picture'}
         </label>
         <input
-          style={{
-            visibility: 'hidden',
-            position: 'absolute',
-          }}
+          className="hidden"
           type="file"
           id="single"
           accept="image/*"

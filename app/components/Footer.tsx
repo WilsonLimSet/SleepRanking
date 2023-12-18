@@ -4,7 +4,7 @@ export default function Footer() {
       <p>
         Built by {' '}  
         <a
-          href="https://github.com/WilsonLimSet/Sleep-Ranking"
+          href="https://github.com/WilsonLimSet/SleepRanking"
           target="_blank"
           className="font-bold hover:underline"
           rel="noreferrer"
