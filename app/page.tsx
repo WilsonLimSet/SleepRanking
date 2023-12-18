@@ -1,6 +1,7 @@
 import AuthForm from './auth-form';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import AuthButton from './components/AuthButton';
 
 export default async function Home() {
   return (
@@ -8,7 +9,7 @@ export default async function Home() {
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
           <p className="text-2xl font-bold ">Sleep Ranking</p>
-          <AuthForm />
+             {<AuthButton />}
         </div>
       </nav>
 
