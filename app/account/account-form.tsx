@@ -4,7 +4,9 @@ import Link from 'next/link'
 import Avatar from './avatar'
 import { Database } from '../database.types'
 import { Session, createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-
+import CountrySelector from "../components/selector";
+import { COUNTRIES } from "../lib/countries";
+import { SelectMenuOption } from "../lib/types";
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>()
   const [loading, setLoading] = useState(true)
@@ -12,6 +14,9 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const [username, setUsername] = useState<string | null>(null)
   const [website, setWebsite] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  // Default this to a country's code to preselect it
+  const [country, setCountry] = useState<SelectMenuOption["value"]>("BE");
   const user = session?.user
 
   const getProfile = useCallback(async () => {
@@ -118,6 +123,18 @@ export default function AccountForm({ session }: { session: Session | null }) {
         "/>
       </label> */}
     </div>
+    <div className={"w-96 px-5"}>
+        <label className="block text-sm font-medium text-gray-700">
+          Select a country
+        </label>
+        <CountrySelector
+          id={"country-selector"}
+          open={isOpen}
+          onToggle={() => setIsOpen(!isOpen)}
+          onChange={setCountry}
+          selectedValue={COUNTRIES.find((option) => option.value === country)}
+        />
+      </div>
        <div>
     <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
     <input
