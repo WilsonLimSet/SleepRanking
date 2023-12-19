@@ -132,7 +132,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
           open={isOpen}
           onToggle={() => setIsOpen(!isOpen)}
           onChange={setCountry}
-          selectedValue={COUNTRIES.find((option) => option.value === country)}
+          selectedValue={COUNTRIES.find((option) => option.value === country) || { title: 'United States', value: 'US' }}
         />
       </div>
        <div>
