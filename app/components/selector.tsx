@@ -25,10 +25,10 @@ export default function CountrySelector({
   useEffect(() => {
     const mutableRef = ref as MutableRefObject<HTMLDivElement | null>;
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         mutableRef.current &&
-        !mutableRef.current.contains(event.target) &&
+        !mutableRef.current.contains(event.target as Node) &&
         open
       ) {
         onToggle();
