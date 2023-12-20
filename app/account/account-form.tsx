@@ -1,55 +1,60 @@
-'use client'
-import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
-import Avatar from './avatar'
-import { Database } from '../database.types'
-import { Session, createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+"use client";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import Avatar from "./avatar";
+import { Database } from "../database.types";
+import {
+  Session,
+  createClientComponentClient,
+} from "@supabase/auth-helpers-nextjs";
 import CountrySelector from "../components/selector";
 import { COUNTRIES } from "../lib/countries";
 import { SelectMenuOption } from "../lib/types";
 export default function AccountForm({ session }: { session: Session | null }) {
-  const supabase = createClientComponentClient<Database>()
-  const [loading, setLoading] = useState(true)
-  const [fullname, setFullname] = useState<string | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [website, setWebsite] = useState<string | null>(null)
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
+  const supabase = createClientComponentClient<Database>();
+  const [loading, setLoading] = useState(true);
+  const [fullname, setFullname] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [website, setWebsite] = useState<string | null>(null);
+  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   // Default this to a country's code to preselect it
   const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
-  const user = session?.user
+  const user = session?.user;
 
   const getProfile = useCallback(async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       let { data, error, status } = await supabase
-        .from('profiles')
+        .from("profiles")
         .select(`full_name, username, website, avatar_url,country`)
-        .eq('id', user?.id ?? '')
-        .single()
+        .eq("id", user?.id ?? "")
+        .single();
 
       if (error && status !== 406) {
-        throw error
+        throw error;
       }
 
       if (data) {
-        setFullname(data.full_name)
-        setUsername(data.username)
-        setWebsite(data.website)
-        setAvatarUrl(data.avatar_url)
-        setCountry(data.country)
+        if (data && data.full_name) {
+          setFullname(data.full_name);
+        }
+        setUsername(data.username);
+        setWebsite(data.website);
+        setAvatarUrl(data.avatar_url);
+        setCountry(data.country as SelectMenuOption["value"]);
       }
     } catch (error) {
-      alert('Error loading user data!')
+      alert("Error loading user data!");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [user, supabase])
+  }, [user, supabase]);
 
   useEffect(() => {
-    getProfile()
-  }, [user, getProfile])
+    getProfile();
+  }, [user, getProfile]);
 
   async function updateProfile({
     username,
@@ -57,16 +62,16 @@ export default function AccountForm({ session }: { session: Session | null }) {
     avatar_url,
     country,
   }: {
-    username: string | null
-    fullname: string | null
-    website: string | null
-    avatar_url: string | null
-    country: string | null
+    username: string | null;
+    fullname: string | null;
+    website: string | null;
+    avatar_url: string | null;
+    country: string | null;
   }) {
     try {
-      setLoading(true)
+      setLoading(true);
 
-      let { error } = await supabase.from('profiles').upsert({
+      let { error } = await supabase.from("profiles").upsert({
         id: user?.id as string,
         full_name: fullname,
         username,
@@ -74,19 +79,19 @@ export default function AccountForm({ session }: { session: Session | null }) {
         avatar_url,
         country,
         updated_at: new Date().toISOString(),
-      })
-      if (error) throw error
-      alert('Profile updated!')
+      });
+      if (error) throw error;
+      alert("Profile updated!");
     } catch (error) {
-      alert('Error updating the data!')
+      alert("Error updating the data!");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return (
     <div className="bg-white shadow-md rounded-lg p-8 mb-4 max-w-2xl mx-auto">
-        <Link
+      <Link
         href="/"
         className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
       >
@@ -103,32 +108,36 @@ export default function AccountForm({ session }: { session: Session | null }) {
           className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
         >
           <polyline points="15 18 9 12 15 6" />
-        </svg>{' '}
+        </svg>{" "}
         Back
       </Link>
       <div className="flex flex-col items-center space-y-4">
-      <Avatar
-        uid={user!.id}
-        url={avatar_url}
-        size={100}
-        onUpload={(url) => {
-          setAvatarUrl(url);
-          // updateProfile({ fullname, username, website, avatar_url: url });
-        }}
-      />
-    
-    </div>
-    <div className="space-y-1 py-2">
-    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-    <input
-      id="email"
-      type="text"
-      value={session?.user.email}
-      disabled
-      className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-    />
-  </div>
-    <div className="space-y-2 py-2">
+        <Avatar
+          uid={user!.id}
+          url={avatar_url}
+          size={100}
+          onUpload={(url) => {
+            setAvatarUrl(url);
+            // updateProfile({ fullname, username, website, avatar_url: url });
+          }}
+        />
+      </div>
+      <div className="space-y-1 py-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          type="text"
+          value={session?.user.email}
+          disabled
+          className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+      <div className="space-y-2 py-2">
         <label className="block text-sm font-medium text-gray-700">
           Select a country
         </label>
@@ -137,54 +146,70 @@ export default function AccountForm({ session }: { session: Session | null }) {
           open={isOpen}
           onToggle={() => setIsOpen(!isOpen)}
           onChange={setCountry}
-          selectedValue={COUNTRIES.find((option) => option.value === country) || { title: 'United States', value: 'US' }}
+          selectedValue={
+            COUNTRIES.find((option) => option.value === country) || {
+              title: "United States",
+              value: "US",
+            }
+          }
         />
       </div>
-     
-       <div className="space-y-2 py-2">
-    <label htmlFor="fullName" className="text-sm font-semibold text-gray-700">Full Name</label>
-    <input
-      id="fullName"
-      type="text"
-      placeholder="Enter your full name"
-      value={fullname || ''}
-      onChange={(e) => setFullname(e.target.value)}
-      className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-    />
-  </div>
-   
-      <div className="space-y-1 py-2">
-    <label htmlFor="website" className="text-sm font-semibold text-gray-700">Website</label>
-    <input
-      id="website"
-      type="url"
-      placeholder="https://yourwebsite.com"
-      value={website || ''}
-      onChange={(e) => setWebsite(e.target.value)}
-      className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-    />
-  </div>
-      <div className="space-y-1 py-2">
-    <button
-      className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm text-sm font-medium"
-      onClick={() => updateProfile({ fullname, username, website, avatar_url,country})}
-      disabled={loading}
-    >
-      {loading ? 'Loading ...' : 'Update'}
-    </button>
-  </div>
 
-  <div className="space-y-1 py-2">
-    <form action="/auth/signout" method="post">
-      <button
-        type="submit"
-        className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm text-sm font-medium"
-      >
-        Sign out
-      </button>
-    </form>
-  </div>
-</div>
+      <div className="space-y-2 py-2">
+        <label
+          htmlFor="fullName"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Full Name
+        </label>
+        <input
+          id="fullName"
+          type="text"
+          placeholder="Enter your full name"
+          value={fullname || ""}
+          onChange={(e) => setFullname(e.target.value)}
+          className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
 
-  )
+      <div className="space-y-1 py-2">
+        <label
+          htmlFor="website"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Website
+        </label>
+        <input
+          id="website"
+          type="url"
+          placeholder="https://yourwebsite.com"
+          value={website || ""}
+          onChange={(e) => setWebsite(e.target.value)}
+          className="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
+      <div className="space-y-1 py-2">
+        <button
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm text-sm font-medium"
+          onClick={() =>
+            updateProfile({ fullname, username, website, avatar_url, country })
+          }
+          disabled={loading}
+        >
+          {loading ? "Loading ..." : "Update"}
+        </button>
+      </div>
+
+      <div className="space-y-1 py-2">
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm text-sm font-medium"
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
