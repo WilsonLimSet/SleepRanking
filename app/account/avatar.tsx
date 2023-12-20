@@ -84,8 +84,9 @@ export default function Avatar({
       <div className={`mt-4`}>
         <label
           htmlFor="single"
-          className={`block w-full text-center px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer 
-                      hover:bg-blue-600 disabled:bg-blue-300 ${uploading ? 'opacity-50' : 'opacity-100'}`}
+          className={`block w-full text-center px-4 py-2 
+          className="w-full py-2 px-4 bg-blue-600 text-white rounded-md cursor-pointer 
+                      hover:bg-blue-700 disabled:bg-blue-300 ${uploading ? 'opacity-50' : 'opacity-100'}`}
         >
           {uploading ? 'Uploading ...' : 'Choose profile picture'}
         </label>
