@@ -16,7 +16,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false);
   // Default this to a country's code to preselect it
-  const [country, setCountry] = useState<SelectMenuOption["value"]>("BE");
+  const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
   const user = session?.user
 
   const getProfile = useCallback(async () => {
@@ -25,7 +25,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       let { data, error, status } = await supabase
         .from('profiles')
-        .select(`full_name, username, website, avatar_url`)
+        .select(`full_name, username, website, avatar_url,country`)
         .eq('id', user?.id ?? '')
         .single()
 
@@ -38,6 +38,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         setUsername(data.username)
         setWebsite(data.website)
         setAvatarUrl(data.avatar_url)
+        setCountry(data.country)
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -54,11 +55,13 @@ export default function AccountForm({ session }: { session: Session | null }) {
     username,
     website,
     avatar_url,
+    country,
   }: {
     username: string | null
     fullname: string | null
     website: string | null
     avatar_url: string | null
+    country: string | null
   }) {
     try {
       setLoading(true)
@@ -69,6 +72,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         username,
         website,
         avatar_url,
+        country,
         updated_at: new Date().toISOString(),
       })
       if (error) throw error
@@ -163,7 +167,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
       <div className="space-y-1 py-2">
     <button
       className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm text-sm font-medium"
-      onClick={() => updateProfile({ fullname, username, website, avatar_url })}
+      onClick={() => updateProfile({ fullname, username, website, avatar_url,country})}
       disabled={loading}
     >
       {loading ? 'Loading ...' : 'Update'}
