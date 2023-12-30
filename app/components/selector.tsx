@@ -40,7 +40,7 @@ export default function CountrySelector({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [ref]);
+  }, [ref, onToggle, open]);
 
   const [query, setQuery] = useState("");
 
@@ -135,6 +135,7 @@ export default function CountrySelector({
                         className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 flex items-center hover:bg-gray-50 transition"
                         id="listbox-option-0"
                         role="option"
+                        aria-selected={value.value === selectedValue.value}
                         onClick={() => {
                           onChange(value.value);
                           setQuery("");

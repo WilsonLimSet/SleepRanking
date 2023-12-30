@@ -14,7 +14,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+ 
   const [website, setWebsite] = useState<string | null>(null);
   const [avatar_url, setAvatarUrl] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, username, website, avatar_url,country`)
+        .select(`full_name, website, avatar_url,country`)
         .eq("id", user?.id ?? "")
         .single();
 
@@ -40,7 +40,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         if (data && data.full_name) {
           setFullname(data.full_name);
         }
-        setUsername(data.username);
+        
         setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
         setCountry(data.country as SelectMenuOption["value"]);
@@ -57,12 +57,12 @@ export default function AccountForm({ session }: { session: Session | null }) {
   }, [user, getProfile]);
 
   async function updateProfile({
-    username,
+    fullname,
     website,
     avatar_url,
     country,
   }: {
-    username: string | null;
+  
     fullname: string | null;
     website: string | null;
     avatar_url: string | null;
@@ -74,7 +74,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
       let { error } = await supabase.from("profiles").upsert({
         id: user?.id as string,
         full_name: fullname,
-        username,
         website,
         avatar_url,
         country,
@@ -90,7 +89,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-8 mb-4 max-w-2xl mx-auto">
+    <div className="bg-white shadow-md rounded-lg p-8 mb-4 ">
       <Link
         href="/"
         className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
@@ -192,7 +191,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         <button
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm text-sm font-medium"
           onClick={() =>
-            updateProfile({ fullname, username, website, avatar_url, country })
+            updateProfile({ fullname, website, avatar_url, country })
           }
           disabled={loading}
         >
