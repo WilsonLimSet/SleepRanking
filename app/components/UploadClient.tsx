@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { getLoggedIn } from "./getLoggedIn";
-import { Toaster, toast } from "sonner";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function UploadClient() {

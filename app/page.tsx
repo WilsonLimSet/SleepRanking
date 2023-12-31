@@ -2,7 +2,7 @@ import UploadClient from "./components/UploadClient";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import AuthButton from "./components/AuthButton";
-
+import { DatePickerWithPresets } from "./components/DateComponent";
 export default async function Home() {
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -15,6 +15,7 @@ export default async function Home() {
         </div>
         {<AuthButton />}
       </nav>
+      <DatePickerWithPresets />
       <Header />
 
       <Footer />
