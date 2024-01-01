@@ -1,4 +1,13 @@
 "use client";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Avatar from "./avatar";
@@ -14,7 +23,12 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
- 
+  const [sleep_tracker, setSleepTracker] = useState("");
+
+  const handleSelectSleepTracker = (value: string) => {
+    console.log("Selected Sleep Tracker:", value); // Debugging line
+    setSleepTracker(value);
+  };
   const [website, setWebsite] = useState<string | null>(null);
   const [avatar_url, setAvatarUrl] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -28,22 +42,22 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, website, avatar_url,country`)
+        .select(`full_name, website, avatar_url,country,sleep_tracker`)
         .eq("id", user?.id ?? "")
         .single();
 
       if (error && status !== 406) {
         throw error;
       }
-
+      console.log(data);
       if (data) {
         if (data && data.full_name) {
           setFullname(data.full_name);
         }
-        
         setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
         setCountry(data.country as SelectMenuOption["value"]);
+        setSleepTracker(data.sleep_tracker); 
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -61,15 +75,19 @@ export default function AccountForm({ session }: { session: Session | null }) {
     website,
     avatar_url,
     country,
+    sleep_tracker,
   }: {
-  
     fullname: string | null;
     website: string | null;
     avatar_url: string | null;
     country: string | null;
+    sleep_tracker: string | null;
   }) {
     try {
+      console.log("Updating profile with:", { fullname, website, avatar_url, country, sleep_tracker }); // Debugging line
+
       setLoading(true);
+
 
       let { error } = await supabase.from("profiles").upsert({
         id: user?.id as string,
@@ -77,9 +95,13 @@ export default function AccountForm({ session }: { session: Session | null }) {
         website,
         avatar_url,
         country,
+        sleep_tracker,
         updated_at: new Date().toISOString(),
       });
-      if (error) throw error;
+      if (error) {
+      console.error("Error updating the data:", error);
+      throw error;
+      }
       alert("Profile updated!");
     } catch (error) {
       alert("Error updating the data!");
@@ -117,7 +139,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
           size={100}
           onUpload={(url) => {
             setAvatarUrl(url);
-            // updateProfile({ fullname, username, website, avatar_url: url });
           }}
         />
       </div>
@@ -171,6 +192,32 @@ export default function AccountForm({ session }: { session: Session | null }) {
         />
       </div>
 
+      <div className="space-y-2 py-2">
+  <label
+    htmlFor="sleepTracker"
+    className="text-sm font-semibold text-gray-700"
+  >
+    Sleep Tracker
+  </label>
+  <Select
+    value={sleep_tracker}
+    onValueChange={handleSelectSleepTracker}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select a sleep tracker" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectGroup>
+        <SelectItem value="Oura Ring">Oura Ring</SelectItem>
+        <SelectItem value="Whoop">Whoop</SelectItem>
+        <SelectItem value="Apple Watch">Apple Watch</SelectItem>
+        <SelectItem value="Fitbit">Fitbit</SelectItem>
+        <SelectItem value="Others">Others</SelectItem>
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+</div>
+
       <div className="space-y-1 py-2">
         <label
           htmlFor="website"
@@ -191,7 +238,13 @@ export default function AccountForm({ session }: { session: Session | null }) {
         <button
           className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm text-sm font-medium"
           onClick={() =>
-            updateProfile({ fullname, website, avatar_url, country })
+            updateProfile({
+              fullname,
+              website,
+              avatar_url,
+              country,
+              sleep_tracker,
+            })
           }
           disabled={loading}
         >
