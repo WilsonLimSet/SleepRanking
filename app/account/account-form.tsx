@@ -1,4 +1,20 @@
 "use client";
+
+// Define the structure of your 'profiles' table
+interface Profile {
+  id: string;
+  full_name: string | null;
+  website: string | null;
+  avatar_url: string | null;
+  country: string | null;
+  sleep_tracker: string | null;
+  // Add other fields from your profiles table if needed
+}
+
+// Define the database structure
+interface Database {
+  profiles: Profile;
+}
 import {
   Select,
   SelectContent,
@@ -11,7 +27,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Avatar from "./avatar";
-import { Database } from "../database.types";
+// import { Database } from "../database.types";
 import {
   Session,
   createClientComponentClient,
@@ -20,44 +36,46 @@ import CountrySelector from "../components/selector";
 import { COUNTRIES } from "../lib/countries";
 import { SelectMenuOption } from "../lib/types";
 export default function AccountForm({ session }: { session: Session | null }) {
+  // Create a Supabase client with the correct type
   const supabase = createClientComponentClient<Database>();
+
+  // Component state definitions
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [sleep_tracker, setSleepTracker] = useState("");
+  const [website, setWebsite] = useState<string | null>(null);
+  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
 
   const handleSelectSleepTracker = (value: string) => {
     console.log("Selected Sleep Tracker:", value); // Debugging line
     setSleepTracker(value);
   };
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  // Default this to a country's code to preselect it
-  const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
+
+  // Extract user from session
   const user = session?.user;
 
+  // Fetch user profile data
   const getProfile = useCallback(async () => {
     try {
       setLoading(true);
-
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, website, avatar_url,country,sleep_tracker`)
+        .select(`full_name, website, avatar_url, sleep_tracker, country`)
         .eq("id", user?.id ?? "")
         .single();
 
       if (error && status !== 406) {
         throw error;
       }
-      console.log(data);
+
       if (data) {
-        if (data && data.full_name) {
-          setFullname(data.full_name);
-        }
+        setFullname(data.full_name);
         setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
         setCountry(data.country as SelectMenuOption["value"]);
-        setSleepTracker(data.sleep_tracker); 
+        setSleepTracker(data.sleep_tracker);
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -66,10 +84,12 @@ export default function AccountForm({ session }: { session: Session | null }) {
     }
   }, [user, supabase]);
 
+  // Load profile data on component mount
   useEffect(() => {
     getProfile();
   }, [user, getProfile]);
 
+  // Update profile data
   async function updateProfile({
     fullname,
     website,
@@ -84,10 +104,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
     sleep_tracker: string | null;
   }) {
     try {
-      console.log("Updating profile with:", { fullname, website, avatar_url, country, sleep_tracker }); // Debugging line
-
       setLoading(true);
-
 
       let { error } = await supabase.from("profiles").upsert({
         id: user?.id as string,
@@ -98,9 +115,9 @@ export default function AccountForm({ session }: { session: Session | null }) {
         sleep_tracker,
         updated_at: new Date().toISOString(),
       });
+
       if (error) {
-      console.error("Error updating the data:", error);
-      throw error;
+        throw error;
       }
       alert("Profile updated!");
     } catch (error) {
@@ -193,30 +210,27 @@ export default function AccountForm({ session }: { session: Session | null }) {
       </div>
 
       <div className="space-y-2 py-2">
-  <label
-    htmlFor="sleepTracker"
-    className="text-sm font-semibold text-gray-700"
-  >
-    Sleep Tracker
-  </label>
-  <Select
-    value={sleep_tracker}
-    onValueChange={handleSelectSleepTracker}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Select a sleep tracker" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectGroup>
-        <SelectItem value="Oura Ring">Oura Ring</SelectItem>
-        <SelectItem value="Whoop">Whoop</SelectItem>
-        <SelectItem value="Apple Watch">Apple Watch</SelectItem>
-        <SelectItem value="Fitbit">Fitbit</SelectItem>
-        <SelectItem value="Others">Others</SelectItem>
-      </SelectGroup>
-    </SelectContent>
-  </Select>
-</div>
+        <label
+          htmlFor="sleepTracker"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Sleep Tracker
+        </label>
+        <Select value={sleep_tracker} onValueChange={handleSelectSleepTracker}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a sleep tracker" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="Oura Ring">Oura Ring</SelectItem>
+              <SelectItem value="Whoop">Whoop</SelectItem>
+              <SelectItem value="Apple Watch">Apple Watch</SelectItem>
+              <SelectItem value="Fitbit">Fitbit</SelectItem>
+              <SelectItem value="Others">Others</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="space-y-1 py-2">
         <label
