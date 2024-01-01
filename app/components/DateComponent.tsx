@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { addDays, format, isAfter, startOfToday } from "date-fns"
+import { addDays, format, isAfter, isBefore, startOfToday } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -11,13 +10,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select } from "@/components/ui/select"
 
 export function DatePickerWithPresets() {
-  const [date, setDate] = React.useState<Date>()
+  // Initialize date state to today's date
+  const [date, setDate] = React.useState<Date>(startOfToday())
+  const disableBefore2024 = new Date(2024, 0, 1); // January 1st, 2024
 
   // Handle date selection
-  const handleDateSelect = (selectedDate:any) => {
-    if (isAfter(selectedDate, startOfToday())) {
-      // If the selected date is in the future, do not update the date
-      return;
+  const handleDateSelect = (selectedDate: any) => {
+    if (isBefore(selectedDate, disableBefore2024) || isAfter(selectedDate, startOfToday())) {
+      return; // Do not update the date if it's before 2024 or after today
     }
     setDate(selectedDate);
   }
@@ -45,9 +45,16 @@ export function DatePickerWithPresets() {
           {/* Options for Select */}
         </Select>
         <div className="rounded-md border">
-          <Calendar mode="single" selected={date} onSelect={handleDateSelect} />
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={handleDateSelect}
+            fromMonth={disableBefore2024} // Set the earliest month that can be navigated to
+          />
         </div>
       </PopoverContent>
     </Popover>
   )
 }
+
+

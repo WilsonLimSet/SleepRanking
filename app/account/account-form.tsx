@@ -151,7 +151,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
       </Link>
       <div className="flex flex-col items-center space-y-4">
         <Avatar
-          uid={user!.id}
+           uid={user ? user.id : ''}
           url={avatar_url}
           size={100}
           onUpload={(url) => {
