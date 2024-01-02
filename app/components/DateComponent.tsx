@@ -13,13 +13,20 @@ export function DatePickerWithPresets() {
   // Initialize date state to today's date
   const [date, setDate] = React.useState<Date>(startOfToday())
   const disableBefore2024 = new Date(2024, 0, 1); // January 1st, 2024
+  const [error, setError] = React.useState<string>("")
 
   // Handle date selection
   const handleDateSelect = (selectedDate: any) => {
-    if (isBefore(selectedDate, disableBefore2024) || isAfter(selectedDate, startOfToday())) {
-      return; // Do not update the date if it's before 2024 or after today
+    if (isBefore(selectedDate, disableBefore2024)) {
+      setError("Date cannot be before January 1, 2024.")
+      return
     }
-    setDate(selectedDate);
+    if (isAfter(selectedDate, startOfToday())) {
+      setError("Date cannot be after today.")
+      return
+    }
+    setError("")
+    setDate(selectedDate)
   }
 
   return (

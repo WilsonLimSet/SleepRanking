@@ -10,7 +10,7 @@ export default async function Home() {
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
           <p className="text-2xl font-bold ">Sleep Ranking</p>
           <div className="flex space-x-4">
-            <UploadClient />
+            <UploadClient/>
           </div>
         </div>
         {<AuthButton />}

@@ -1,28 +1,64 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getLoggedIn } from "./getLoggedIn";
 import { useToast } from "@/components/ui/use-toast";
+import { createClient } from "@/utils/supabase/client";
 
 export default function UploadClient() {
-  const { toast } = useToast();
+    const { toast } = useToast();
+    const supabase = createClient();
+    const [user, setUser] = useState<any | null>(null);
 
-  const handleUpload = async (event:any) => {
-    event.preventDefault();
-    const result = await getLoggedIn();
-    console.log(result);
-    if (!result.props.userLoggedIn) {
-      toast({ 
-        variant: "destructive",title: "You Must Sign In to Upload Sleep Data" });
-    } else {
-      toast({  variant: "destructive",title: "Event start time cannot be earlier than 8am" });
-    }
-  };
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error) {
+                console.error("Error fetching user data:", error);
+                toast({ variant: "destructive", title: "Error fetching user data" });
+            } else {
+                console.log("Fetched user data:", user);
+                setUser(user);
+            }
+        };
 
-  return (
-    <div className="flex items-center gap-4">
-      <form onSubmit={handleUpload}>
-        <Button variant="outline">Upload</Button>
-      </form>
-    </div>
-  );
+        fetchUser();
+    }, [supabase.auth, toast]);
+
+    const handleUpload = async (event: React.FormEvent) => {
+        event.preventDefault();
+
+        if (!user) {
+            console.log("Upload attempt without user session.");
+            toast({
+                variant: "destructive",
+                title: "You Must Sign In to Upload Sleep Data",
+            });
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from("sleepscores")
+                .insert({ user_id: user.id, sleepScore: "Denmark", selectedDate: new Date(2024, 0, 1) });
+
+            if (error) {
+                console.error("Error in uploading data:", error);
+                throw error;
+            }
+
+            console.log("Data uploaded successfully.");
+            toast({ variant: "default", title: "Data uploaded successfully" });
+        } catch (error) {
+            console.error("Exception in upload:", error);
+            toast({ variant: "destructive", title: "Error in uploading data" });
+        }
+    };
+
+    return (
+        <div className="flex items-center gap-4">
+            <form onSubmit={handleUpload}>
+                <Button variant="outline">Upload</Button>
+            </form>
+        </div>
+    );
 }
