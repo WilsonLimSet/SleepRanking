@@ -1,45 +1,41 @@
-import { createClient } from '@/utils/supabase/server'
-import Link from 'next/link'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+"use client";
+import React, { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client"; // Assuming this is the correct path for client-side usage
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
-export default async function AuthButton() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+export default function AuthButton() {
+  const supabase = createClient();
+  const [user, setUser] = useState<any | null>(null);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error fetching user data:", error);
+      } else {
+        console.log("Fetched user data:", user);
+        setUser(user);
+      }
+    };
 
-
-  const goProfile= async () => {
-    'use server'
-    return redirect('/account')
-  }
+    fetchUser();
+  }, [supabase.auth]);
 
   return user ? (
-   
     <div className="flex items-center gap-4">
-      
-      <form action={goProfile}>
-      <Button>
-          Profile
-          </Button>
-      </form>
-      
+      <Link href="/account" passHref>
+        <Button>Profile</Button>
+      </Link>
     </div>
-   
   ) : (
     <div className="flex items-center gap-4">
-    <Link
-      href="/login"
-     >
-        <Button>
-        Login/Sign Up
-        </Button>
-    </Link>
+      <Link href="/login" passHref>
+        <Button>Login/Sign Up</Button>
+      </Link>
     </div>
-  )
-
+  );
 }

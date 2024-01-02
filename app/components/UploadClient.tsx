@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/utils/supabase/client";
 
-export default function UploadClient() {
+type UploadClientProps = {
+    selectedDate: Date;
+  };
+  
+
+export default function UploadClient({ selectedDate }: UploadClientProps) {
     const { toast } = useToast();
     const supabase = createClient();
     const [user, setUser] = useState<any | null>(null);
@@ -26,7 +31,7 @@ export default function UploadClient() {
 
     const handleUpload = async (event: React.FormEvent) => {
         event.preventDefault();
-
+    
         if (!user) {
             console.log("Upload attempt without user session.");
             toast({
@@ -35,17 +40,20 @@ export default function UploadClient() {
             });
             return;
         }
-
+    
+        // Convert the selected date to UTC
+        const utcDate = new Date(Date.UTC(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()));
+    
         try {
             const { error } = await supabase
                 .from("sleepscores")
-                .insert({ user_id: user.id, sleepScore: "Denmark", selectedDate: new Date(2024, 0, 1) });
-
+                .insert({ user_id: user.id, sleepScore: "88", selectedDate: utcDate });
+    
             if (error) {
                 console.error("Error in uploading data:", error);
                 throw error;
             }
-
+    
             console.log("Data uploaded successfully.");
             toast({ variant: "default", title: "Data uploaded successfully" });
         } catch (error) {
@@ -53,6 +61,7 @@ export default function UploadClient() {
             toast({ variant: "destructive", title: "Error in uploading data" });
         }
     };
+    
 
     return (
         <div className="flex items-center gap-4">
