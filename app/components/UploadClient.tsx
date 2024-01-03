@@ -3,6 +3,17 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { createClient } from "@/utils/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type UploadClientProps = {
   selectedDate: Date;
@@ -12,6 +23,9 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   const { toast } = useToast();
   const supabase = createClient();
   const [user, setUser] = useState<any | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [sleepScore, setSleepScore] = useState('');
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,6 +43,14 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
 
     fetchUser();
   }, [supabase.auth, toast]);
+  const handleOpenDialog = () => {
+    // Logic to handle dialog opening
+    setShowDialog(true);
+  };
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+  };
+
 
   const checkExistingUpload = async (userId: string, date: Date) => {
     // Format the date to YYYY-MM-DD
@@ -42,12 +64,9 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
       let { data, error } = await supabase
         .from("sleepscores")
         .select("*")
-        // .eq("user_id", userId)
-        // // .eq('selectedDate', utcDate);
-        // .from("profiles")
-        // .select(`full_name, website, avatar_url, sleep_tracker, country`)
-        // .eq("id", user?.id ?? "")
-
+        .eq("user_id", userId)
+        .eq('selectedDate', utcDate);
+        
         console.log('Data returned:', data);
         console.log('Error:', error);
   
@@ -74,6 +93,15 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
       });
       return;
     }
+    
+    if (sleepScore.trim() === '') {
+        toast({
+          variant: "destructive",
+          title: "Please enter a sleep score before uploading",
+        });
+        return;
+      }
+    
 
     try {
       // Check if data has already been uploaded for the selected date
@@ -100,7 +128,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
           .from("sleepscores")
           .insert({
             user_id: user.id,
-            sleepScore: "88",
+            sleepScore: sleepScore,
             selectedDate: utcDate,
           });
 
@@ -111,6 +139,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
 
         console.log("Data uploaded successfully.");
         toast({ variant: "default", title: "Data uploaded successfully" });
+        handleCloseDialog(); 
       } catch (error) {
         console.error("Exception in upload:", error);
         toast({ variant: "destructive", title: "Error in uploading data" });
@@ -122,10 +151,47 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <form onSubmit={handleUpload}>
-        <Button variant="outline">Upload</Button>
-      </form>
-    </div>
+    <>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+      <DialogTrigger asChild>
+        <Button variant="outline" onClick={handleOpenDialog}>Upload Sleep Data</Button>
+      </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Sleep Data</DialogTitle>
+            <DialogDescription>
+              Enter your sleep score for the selected date.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpload}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="sleepScore" className="text-right">
+                  Sleep Score
+                </Label>
+                <Input
+  id="sleepScore"
+  type="number"
+  min="0"
+  max="99"
+  value={sleepScore}
+  onChange={(e) => {
+    const value = e.target.value;
+    if (value === '' || (parseInt(value, 10) >= 0 && parseInt(value, 10) <= 99)) {
+      setSleepScore(value);
+    }
+  }}
+  className="col-span-3"
+/>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Upload</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
+
