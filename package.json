@@ -23,6 +23,7 @@
     "@types/node": "20.1.4",
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
+    "@vercel/analytics": "^1.1.1",
     "add": "^2.0.6",
     "bufferutil": "^4.0.8",
     "card": "^2.5.4",

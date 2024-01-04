@@ -24,7 +24,8 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   const supabase = createClient();
   const [user, setUser] = useState<any | null>(null);
   const [showDialog, setShowDialog] = useState(false);
-  const [sleepScore, setSleepScore] = useState('');
+  const [sleepScore, setSleepScore] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
 
   useEffect(() => {
@@ -49,39 +50,40 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   };
   const handleCloseDialog = () => {
     setShowDialog(false);
+    setImageFile(null); 
   };
-
 
   const checkExistingUpload = async (userId: string, date: Date) => {
     // Format the date to YYYY-MM-DD
-    const utcDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
-                      .toISOString()
-                      .split('T')[0];
-  
-    console.log(`Checking for existing upload on ${utcDate} for user ${userId}`);
-  
+    const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+
+    console.log(
+      `Checking for existing upload on ${utcDate} for user ${userId}`
+    );
+
     try {
       let { data, error } = await supabase
         .from("sleepscores")
         .select("*")
         .eq("user_id", userId)
-        .eq('selectedDate', utcDate);
-        
-        console.log('Data returned:', data);
-        console.log('Error:', error);
-  
+        .eq("selectedDate", utcDate);
+
+      console.log("Data returned:", data);
+      console.log("Error:", error);
+
       if (error) {
-        console.error('Error checking existing upload:', error);
+        console.error("Error checking existing upload:", error);
         throw error;
       }
-  
+
       return data && data.length > 0;
     } catch (error) {
-      console.error('Exception while checking existing upload:', error);
+      console.error("Exception while checking existing upload:", error);
       return false; // Return false in case of any exception
     }
   };
-
 
   const handleUpload = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -93,15 +95,22 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
       });
       return;
     }
-    
-    if (sleepScore.trim() === '') {
-        toast({
-          variant: "destructive",
-          title: "Please enter a sleep score before uploading",
-        });
-        return;
-      }
-    
+
+    if (sleepScore.trim() === "") {
+      toast({
+        variant: "destructive",
+        title: "Please enter a sleep score before uploading",
+      });
+      return;
+    }
+
+    if (!imageFile) {
+      toast({
+        variant: "destructive",
+        title: "Please attach an Image before uploading",
+      });
+      return;
+    }
 
     try {
       // Check if data has already been uploaded for the selected date
@@ -124,13 +133,11 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
       );
 
       try {
-        const { error } = await supabase
-          .from("sleepscores")
-          .insert({
-            user_id: user.id,
-            sleepScore: sleepScore,
-            selectedDate: utcDate,
-          });
+        const { error } = await supabase.from("sleepscores").insert({
+          user_id: user.id,
+          sleepScore: sleepScore,
+          selectedDate: utcDate,
+        });
 
         if (error) {
           console.error("Error in uploading data:", error);
@@ -139,7 +146,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
 
         console.log("Data uploaded successfully.");
         toast({ variant: "default", title: "Data uploaded successfully" });
-        handleCloseDialog(); 
+        handleCloseDialog();
       } catch (error) {
         console.error("Exception in upload:", error);
         toast({ variant: "destructive", title: "Error in uploading data" });
@@ -153,9 +160,11 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   return (
     <>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <DialogTrigger asChild>
-        <Button variant="outline" onClick={handleOpenDialog}>Upload Sleep Data</Button>
-      </DialogTrigger>
+        <DialogTrigger asChild>
+          <Button variant="outline" onClick={handleOpenDialog}>
+            Upload
+          </Button>
+        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Upload Sleep Data</DialogTitle>
@@ -170,19 +179,40 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
                   Sleep Score
                 </Label>
                 <Input
-  id="sleepScore"
-  type="number"
-  min="0"
-  max="99"
-  value={sleepScore}
-  onChange={(e) => {
-    const value = e.target.value;
-    if (value === '' || (parseInt(value, 10) >= 0 && parseInt(value, 10) <= 99)) {
-      setSleepScore(value);
-    }
-  }}
-  className="col-span-3"
-/>
+                  id="sleepScore"
+                  type="number"
+                  min="0"
+                  max="99"
+                  value={sleepScore}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (
+                      value === "" ||
+                      (parseInt(value, 10) >= 0 && parseInt(value, 10) <= 99)
+                    ) {
+                      setSleepScore(value);
+                    }
+                  }}
+                  className="col-span-3"
+                />
+                <Label htmlFor="imageFile" className="text-right">
+                  Image Proof
+                </Label>
+                <Input
+                  id="imageFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setImageFile(file);
+                    }
+                    else {
+                        setImageFile(null);
+                      }
+                  }}
+                  className="col-span-3"
+                />
               </div>
             </div>
             <DialogFooter>
@@ -194,4 +224,3 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
     </>
   );
 }
-

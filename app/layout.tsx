@@ -1,5 +1,6 @@
 import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
+import { Analytics } from '@vercel/analytics/react';
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -8,8 +9,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
+  title: 'Strava for Sleep',
+  description: 'Social Sleep Tracking',
 }
 
 export default function RootLayout({
@@ -23,6 +24,7 @@ export default function RootLayout({
         <main className="min-h-screen flex flex-col items-center">
           {children}
           <Toaster />
+          <Analytics />
         </main>
       </body>
     </html>
