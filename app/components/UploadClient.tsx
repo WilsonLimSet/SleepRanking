@@ -26,7 +26,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [sleepScore, setSleepScore] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -50,7 +50,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
   };
   const handleCloseDialog = () => {
     setShowDialog(false);
-    setImageFile(null); 
+    setImageFile(null);
   };
 
   const checkExistingUpload = async (userId: string, date: Date) => {
@@ -113,47 +113,60 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
     }
 
     try {
-      // Check if data has already been uploaded for the selected date
       const alreadyUploaded = await checkExistingUpload(user.id, selectedDate);
       if (alreadyUploaded) {
         toast({
           variant: "destructive",
-          title: "Sleep for this date has already been uploaded",
+          title: "Sleep data for this date has already been uploaded",
         });
         return;
       }
 
-      // Convert the selected date to UTC
+      setUploading(true);
+
+      // Convert the selected date to UTC format
       const utcDate = new Date(
         Date.UTC(
           selectedDate.getFullYear(),
           selectedDate.getMonth(),
           selectedDate.getDate()
         )
-      );
+      ).toISOString();
 
-      try {
-        const { error } = await supabase.from("sleepscores").insert({
-          user_id: user.id,
-          sleepScore: sleepScore,
-          selectedDate: utcDate,
-        });
+      // Upload image
+      const fileExt = imageFile.name.split(".").pop();
+      const filePath = `sleepscores/${utcDate}/${user.id}.${fileExt}`;
+      let { error: uploadError } = await supabase.storage
+        .from("sleepscores")
+        .upload(filePath, imageFile);
 
-        if (error) {
-          console.error("Error in uploading data:", error);
-          throw error;
-        }
-
-        console.log("Data uploaded successfully.");
-        toast({ variant: "default", title: "Data uploaded successfully" });
-        handleCloseDialog();
-      } catch (error) {
-        console.error("Exception in upload:", error);
-        toast({ variant: "destructive", title: "Error in uploading data" });
+      if (uploadError) {
+        throw uploadError;
       }
+
+      // Insert or update the sleep score record with the image URL or path
+      const { error } = await supabase.from("sleepscores").insert({
+        user_id: user.id,
+        sleepScore: sleepScore,
+        selectedDate: utcDate,
+        imageUrl: filePath, // or construct the URL if needed
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("Data and image uploaded successfully.");
+      toast({
+        variant: "default",
+        title: "Data and image uploaded successfully",
+      });
     } catch (error) {
       console.error("Exception in upload:", error);
       toast({ variant: "destructive", title: "Error in uploading data" });
+    } finally {
+      setUploading(false);
+      handleCloseDialog();
     }
   };
 
@@ -206,10 +219,9 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
                     const file = e.target.files?.[0];
                     if (file) {
                       setImageFile(file);
+                    } else {
+                      setImageFile(null);
                     }
-                    else {
-                        setImageFile(null);
-                      }
                   }}
                   className="col-span-3"
                 />
