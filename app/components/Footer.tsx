@@ -10,7 +10,8 @@ export default function Footer() {
           rel="noreferrer"
         >
           WilsonLimSet
-        </a> and powered by{' '}
+          </a>
+        {/* </a> and powered by{' '}
         <a
           href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
           target="_blank"
@@ -18,7 +19,7 @@ export default function Footer() {
           rel="noreferrer"
         >
           Supabase
-        </a>
+        </a> */}
       </p>
     </footer>
   );
