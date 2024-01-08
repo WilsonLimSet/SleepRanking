@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 
-export default function SleepRankCard({ avatar ,name, score, tracker, country, website }: { avatar:string, name: string, score: number, tracker: string, country: string, website: string }) {
+export default function SleepRankCard({ avatar ,name, score, tracker, country}: { avatar:string, name: string, score: number, tracker: string, country: string}) {
   return (
     <div className="flex flex-col bg-gray-100 dark:bg-gray-800 ">
       <Card>
