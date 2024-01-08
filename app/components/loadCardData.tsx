@@ -12,8 +12,12 @@ export async function loadCardData(date: Date) {
     try {
       let { data, error } = await supabase
         .from("sleepscores")
-        .select("*")
-        .eq("selectedDate", utcDate);
+        .select(`
+          *,
+          profiles!inner(*)
+        `)
+        .eq("selectedDate", utcDate);  // We remove the user_id filter to get all user data
+
 
       if (error) {
         console.error("Error checking existing uploads:", error);
