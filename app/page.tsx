@@ -35,32 +35,46 @@ export default function Home() {
     fetchDataForDate();
   }, [selectedDate]); // Re-fetch data whenever the selected date changes
 
-  return (
-    <div className="flex-1 w-full flex flex-col gap-20 items-center">
-      {/* Include the Header component here if you use it */}
-      <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-        <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          <p className="text-2xl font-bold">Sleep Ranking</p>
-          <div className="flex items-center space-x-2 pr-1">
-            <UploadClient selectedDate={selectedDate}/>
-            <AuthButton />
-          </div>
-        </div>
-      </nav>
-      <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+  const sortedCardData = [...cardData].sort((a, b) => b.sleepScore - a.sleepScore);
 
-      {/* Map through cardData to render SleepRankCard for each user */}
-      {cardData.map((data) => (
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <header className="flex justify-between items-center border-b border-b-foreground/10 h-16 px-4">
+        {/* Left side - Sleep Ranking title */}
+        <h1 className="text-2xl font-bold">Sleep Ranking</h1>
+
+        {/* Right side - Date picker, Upload, and Auth button */}
+        <div className="flex items-center space-x-2">
+          {/* <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/> */}
+          <UploadClient selectedDate={selectedDate}/>
+          <AuthButton />
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="flex-grow">
+        <div className="container mx-auto py-4">
+            {/* Date picker centered above the cards */}
+            <div className="flex justify-center my-4">
+            <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Map through cardData to render SleepRankCard for each user */}
+            {sortedCardData.map((data, index) => (
         <SleepRankCard
-          key={data.sleep_id} // Assuming sleep_id is unique
+          key={data.sleep_id}
+          rank={index + 1} // Assign rank based on index after sorting
           avatar={data.profiles.avatar_url}
           name={data.profiles.full_name}
           score={data.sleepScore}
           tracker={data.profiles.sleep_tracker}
           country={data.profiles.country}
-          // website={data.profiles.website}
         />
       ))}
+          </div>
+        </div>
+      </main>
 
       <Footer />
     </div>

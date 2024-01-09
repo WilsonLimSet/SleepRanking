@@ -74,7 +74,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         setFullname(data.full_name);
         setWebsite(data.website);
         setAvatarUrl(data.avatar_url);
-        setCountry(data.country as SelectMenuOption["value"]);
+        setCountry(data.country as SelectMenuOption["value"] || "US");
         setSleepTracker(data.sleep_tracker);
       }
     } catch (error) {
