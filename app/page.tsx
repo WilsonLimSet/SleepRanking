@@ -72,7 +72,7 @@ export default function Home() {
             <div className="flex justify-center my-4">
             <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           </div>
-          <div className="grid grid-cols-1 gap-4">            {/* Map through cardData to render SleepRankCard for each user */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">           {/* Map through cardData to render SleepRankCard for each user */}
             {isLoading ? (
             <div>Loading...</div>
           ) : cardData.length > 0 ? (
