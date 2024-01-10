@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { COUNTRIES } from '../lib/countries'; // Ensure the path is correct
 
-export default function SleepRankCard({ rank, avatar, name, score, tracker, country }: {rank:number,  avatar: string, name: string, score: number, tracker: string, country: string }) {
+export default function SleepRankCard({ rank, avatar, name, score, tracker, country,website }: {rank:number,  avatar: string, name: string, score: number, tracker: string, country: string,website:string }) {
   const supabase = createClientComponentClient<Database>();
   const [avatarUrl, setAvatarUrl] = useState('');
   
@@ -43,7 +43,14 @@ export default function SleepRankCard({ rank, avatar, name, score, tracker, coun
             <Badge className="text-lg font-bold" variant="default">{rank}</Badge>
           </div>
           <div className="space-y-2 flex-grow">
-            <h3 className="text-lg font-bold">{name}</h3>
+            {/* Conditional rendering for name as a link or plain text */}
+            {website ? (
+              <a href={website} target="_blank" rel="noopener noreferrer" className="text-lg font-bold hover:underline">
+                {name}
+              </a>
+            ) : (
+              <h3 className="text-lg font-bold">{name}</h3>
+            )}
             <p className="font-semibold text-gray-500 dark:text-gray-400">Sleep Score: {score}</p>
             <p className="font-semibold text-gray-500 dark:text-gray-400">Sleep Tracker: {tracker}</p>
             <div className="flex items-center">

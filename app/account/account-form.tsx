@@ -49,7 +49,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
 
   const handleSelectSleepTracker = (value: string) => {
-    console.log("Selected Sleep Tracker:", value); // Debugging line
+   
     setSleepTracker(value);
   };
 

@@ -15,9 +15,9 @@ export default function AuthButton() {
         error,
       } = await supabase.auth.getUser();
       if (error) {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       } else {
-        console.log("Fetched user data:", user);
+        // console.log("Fetched user data:", user);
         setUser(user);
       }
     };

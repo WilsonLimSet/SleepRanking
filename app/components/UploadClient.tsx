@@ -35,9 +35,9 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
         error,
       } = await supabase.auth.getUser();
       if (error) {
-        console.error("Error fetching user data:", error);
+        // console.error("Error fetching user data:", error);
       } else {
-        console.log("Fetched user data:", user);
+        // console.log("Fetched user data:", user);
         setUser(user);
       }
     };
@@ -70,8 +70,8 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
         .eq("user_id", userId)
         .eq("selectedDate", utcDate);
 
-      console.log("Data returned:", data);
-      console.log("Error:", error);
+      // console.log("Data returned:", data);
+      // console.log("Error:", error);
 
       if (error) {
         console.error("Error checking existing upload:", error);
@@ -156,7 +156,7 @@ export default function UploadClient({ selectedDate }: UploadClientProps) {
         throw error;
       }
 
-      console.log("Data and image uploaded successfully.");
+      // console.log("Data and image uploaded successfully.");
       toast({
         variant: "default",
         title: "Data and image uploaded successfully",
