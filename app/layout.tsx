@@ -13,6 +13,9 @@ export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: 'Strava for Sleep',
   description: 'Social Sleep Tracking',
+  icons: {
+    icon: "/icon.png",
+    },
 }
 
 export default function RootLayout({
