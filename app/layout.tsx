@@ -1,6 +1,8 @@
 import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from '@vercel/analytics/react';
+import Head from 'next/head';
+
 
 
 const defaultUrl = process.env.VERCEL_URL
@@ -19,6 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
+    
     <html lang="en" >
       <body className="bg-background text-foreground">
         <main className="min-h-screen flex flex-col items-center">

@@ -52,7 +52,7 @@ export default function SleepRankCard({ rank, avatar, name, score, tracker, coun
               <h3 className="text-lg font-bold">{name}</h3>
             )}
             <p className="font-semibold text-gray-500 dark:text-gray-400">Sleep Score: {score}</p>
-            <p className="font-semibold text-gray-500 dark:text-gray-400">Sleep Tracker: {tracker}</p>
+            <p className="font-semibold text-gray-500 dark:text-gray-400">Tracker: {tracker}</p>
             <div className="flex items-center">
               <img
                 alt={`${countryDetails.value}`}
