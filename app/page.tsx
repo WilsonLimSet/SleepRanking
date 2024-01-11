@@ -37,7 +37,7 @@ export default function Home() {
           setCardData(data);
         }
       } catch (error) {
-        console.error('Error loading card data:', error);
+        console.error("Error loading card data:", error);
       } finally {
         if (mounted) {
           setIsLoading(false);
@@ -53,51 +53,62 @@ export default function Home() {
   }, [selectedDate]);
 
   // Sort data just before rendering to avoid redundancy
-  const sortedCardData = [...(cardData || [])].sort((a, b) => b.sleepScore - a.sleepScore);
-
+  const sortedCardData = [...(cardData || [])].sort(
+    (a, b) => b.sleepScore - a.sleepScore
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
-<header className="flex flex-wrap justify-between items-center border-b border-b-foreground/10 px-4">
-        {/* Left side - Sleep Ranking title */}
-        <h1 className="text-lg sm:text-2xl font-bold py-2">Sleep Ranking</h1> {/* Adjust the font size and add padding for mobile */}
+   <header className="flex items-center justify-between border-b border-gray-200 ">
+  {/* Left side - Sleep Ranking title, ensure it takes space with flex-1 */}
+  <div className="flex-1">
+    <h1 className="text-xl font-bold whitespace-nowrap pr-4">Sleep Ranking</h1>
+  </div>
 
-        {/* Right side - Date picker, Upload, and Auth button */}
-        <div className="flex items-center space-x-2">
-          {/* <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/> */}
-          <UploadClient selectedDate={selectedDate}/>
-          <AuthButton />
-        </div>
-      </header>
+  {/* Spacer element to allow the title and profile to sit at extremes */}
+  <div className="flex-1"></div> 
 
+  {/* Right side - Upload, and Auth button, also using flex-1 to take space */}
+  <div className="flex-1 flex justify-end py-1 ">
+  <div className="mr-2">
+    <UploadClient selectedDate={selectedDate} />
+    </div>
+    <AuthButton />
+  </div>
+</header>
       {/* Main content */}
-    
-<main className="flex-grow">
-  <div className="container mx-auto py-4 px-2 sm:px-4">
-            {/* Date picker centered above the cards */}
-            <div className="flex justify-center my-4">
-            <DatePickerWithPresets selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+
+      <main className="flex-grow">
+        <div className="container mx-auto py-4 px-2 sm:px-4">
+          {/* Date picker centered above the cards */}
+          <div className="flex justify-center my-4">
+            <DatePickerWithPresets
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">           {/* Map through cardData to render SleepRankCard for each user */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {" "}
+            {/* Map through cardData to render SleepRankCard for each user */}
             {isLoading ? (
-            <div>Loading...</div>
-          ) : cardData.length > 0 ? (
-            cardData.map((data, index) => (
-              <SleepRankCard
-                key={data.sleep_id}
-                rank={index + 1}
-                avatar={data.profiles.avatar_url}
-                name={data.profiles.full_name}
-                score={data.sleepScore}
-                tracker={data.profiles.sleep_tracker}
-                country={data.profiles.country}
-                website={data.profiles.website}
-              />
-            ))
-          ) : (
-            <div>No sleep data available for this date.</div>
-          )}
-        </div>
+              <div>Loading...</div>
+            ) : cardData.length > 0 ? (
+              cardData.map((data, index) => (
+                <SleepRankCard
+                  key={data.sleep_id}
+                  rank={index + 1}
+                  avatar={data.profiles.avatar_url}
+                  name={data.profiles.full_name}
+                  score={data.sleepScore}
+                  tracker={data.profiles.sleep_tracker}
+                  country={data.profiles.country}
+                  website={data.profiles.website}
+                />
+              ))
+            ) : (
+              <div>No sleep data available for this date.</div>
+            )}
+          </div>
         </div>
       </main>
 
