@@ -27,27 +27,33 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     const fetchDataForDate = async () => {
       setIsLoading(true);
       try {
         const data = await loadCardData(selectedDate);
-        setCardData(data.sort((a, b) => b.sleepScore - a.sleepScore));
+        if (data && mounted) {
+          // No need to sort here if you're going to sort again before rendering
+          setCardData(data);
+        }
       } catch (error) {
         console.error('Error loading card data:', error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchDataForDate();
+
+    return () => {
+      mounted = false; // Cleanup function to prevent setting state on unmounted component
+    };
   }, [selectedDate]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  
-
-  const sortedCardData = [...cardData].sort((a, b) => b.sleepScore - a.sleepScore);
+  // Sort data just before rendering to avoid redundancy
+  const sortedCardData = [...(cardData || [])].sort((a, b) => b.sleepScore - a.sleepScore);
 
 
   return (

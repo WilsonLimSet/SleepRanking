@@ -1,13 +1,23 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
 
+// Utility function to adjust date to PST
+const adjustDateToPST = (date: Date) => {
+  // PST is 8 hours behind UTC
+  const PST_OFFSET = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+  return new Date(date.getTime() - PST_OFFSET);
+};
+
 export async function loadCardData(date: Date) {
   const supabase = createClient();
 
   const checkSleepUploads = async (date: Date) => {
-    // Format the date to YYYY-MM-DD
-    const utcDate = date.toISOString().split('T')[0];
-    console.log(`Checking for uploads on ${utcDate}`);
+    // Adjust the date to PST
+    const adjustedDate = adjustDateToPST(date);
+
+    // Format the adjusted date to YYYY-MM-DD
+    const pstDate = adjustedDate.toISOString().split('T')[0];
+    console.log(`Checking for uploads on ${pstDate} in PST`);
 
     try {
       let { data, error } = await supabase
@@ -16,28 +26,19 @@ export async function loadCardData(date: Date) {
           *,
           profiles!inner(*)
         `)
-        .eq("selectedDate", utcDate);  // We remove the user_id filter to get all user data
-
+        .eq("selectedDate", pstDate);  // We remove the user_id filter to get all user data
 
       if (error) {
         console.error("Error checking existing uploads:", error);
-        return null; // Return null in case of error
+        return []; // Return an empty array in case of error
       }
 
       return data; // This will return the array of uploads or an empty array
     } catch (error) {
       console.error("Exception while checking existing uploads:", error);
-      return null; // Return null in case of any exception
+      return []; // Return an empty array in case of any exception
     }
   };
 
-  // Now you can use the checkSleepUploads function to load the data
-  const uploads = await checkSleepUploads(date);
-  if (uploads) {
-    console.log('Uploads found:', uploads);
-    return uploads; // Return the uploads data
-  } else {
-    console.log('No uploads found for this date.');
-    return []; // Return an empty array if no uploads were found
-  }
+  return checkSleepUploads(date);
 }

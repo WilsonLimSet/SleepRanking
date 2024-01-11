@@ -33,12 +33,13 @@ export function DatePickerWithPresets({
       // Handle the case where the date is undefined
       return;
     }
+    const tomorrow = addDays(startOfToday(), 1); // Get tomorrow's date
 
     if (isBefore(newDate, disableBefore2024)) {
       setError("Date cannot be before January 1, 2024.");
       return;
     }
-    if (isAfter(newDate, startOfToday())) {
+    if (isAfter(newDate, tomorrow)) {
       setError("Date cannot be after today.");
       return;
     }
