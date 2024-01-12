@@ -17,6 +17,13 @@ export default function SleepRankCard({ rank, avatar, name, score, tracker, coun
 
   const countryDetails = getCountryDetails(country);
 
+  const formatUrl = (url:string) => {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return `https://${url}`;
+    }
+    return url;
+  };
+
   useEffect(() => {
     const downloadImage = async (path: string) => {
       try {
@@ -45,7 +52,7 @@ export default function SleepRankCard({ rank, avatar, name, score, tracker, coun
           <div className="space-y-2 flex-grow">
             {/* Conditional rendering for name as a link or plain text */}
             {website ? (
-              <a href={website} target="_blank" rel="noopener noreferrer" className="text-lg font-bold hover:underline">
+              <a href={formatUrl(website)} target="_blank" rel="noopener noreferrer" className="text-lg font-bold hover:underline">
                 {name}
               </a>
             ) : (
