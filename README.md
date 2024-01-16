@@ -2,7 +2,7 @@
 
 Leverage social competition to improve your sleep. 
 
-- 🏗️ Built on top of this NextJS/Supabase [template](https://demo-nextjs-with-supabase.vercel.app/)
+- 🏗️ Built on top of this Next.js/Supabase [template](https://demo-nextjs-with-supabase.vercel.app/).
 
 
 ## 🗺️ Project Roadmap
