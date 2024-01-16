@@ -1,23 +1,24 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
 
-// Utility function to adjust date to PST
-const adjustDateToPST = (date: Date) => {
-  // PST is 8 hours behind UTC
-  const PST_OFFSET = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
-  return new Date(date.getTime() - PST_OFFSET);
+// Utility function to adjust date to UTC
+const adjustDateToUTC = (date: Date) => {
+  // Get the local timezone offset and convert it to milliseconds
+  const timezoneOffset = date.getTimezoneOffset() * 60 * 1000; // Local timezone offset in milliseconds
+  // Adjust the date to UTC
+  return new Date(date.getTime() - timezoneOffset);
 };
 
 export async function loadCardData(date: Date) {
   const supabase = createClient();
 
   const checkSleepUploads = async (date: Date) => {
-    // Adjust the date to PST
-    const adjustedDate = adjustDateToPST(date);
+    // Adjust the date to UTC
+    const utcDate = adjustDateToUTC(date);
 
     // Format the adjusted date to YYYY-MM-DD
-    const pstDate = adjustedDate.toISOString().split('T')[0];
-    console.log(`Checking for uploads on ${pstDate} in PST`);
+    const formattedDate = utcDate.toISOString().split('T')[0];
+    console.log(`Checking for uploads on ${formattedDate} in UTC`);
 
     try {
       let { data, error } = await supabase
@@ -26,7 +27,7 @@ export async function loadCardData(date: Date) {
           *,
           profiles!inner(*)
         `)
-        .eq("selectedDate", pstDate);  // We remove the user_id filter to get all user data
+        .eq("selectedDate", formattedDate);  // We remove the user_id filter to get all user data
 
       if (error) {
         console.error("Error checking existing uploads:", error);

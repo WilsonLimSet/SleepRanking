@@ -56,7 +56,7 @@ export default function Home() {
 
         if (isAllTimeSelected) {
           // Fetch all-time data
-          data = await loadAllCardData() || [];
+          data = (await loadAllCardData()) || [];
           data = data.sort((a, b) => b.sleepScore - a.sleepScore).slice(0, 6);
 
           if (mounted) {
@@ -64,7 +64,7 @@ export default function Home() {
           }
         } else {
           // Fetch daily data
-          data = await loadCardData(selectedDate) || [];
+          data = (await loadCardData(selectedDate)) || [];
           if (mounted) {
             setCardData(data);
           }
@@ -83,13 +83,12 @@ export default function Home() {
     return () => {
       mounted = false; // Cleanup function to prevent setting state on unmounted component
     };
-  }, [selectedDate,isAllTimeSelected]);
+  }, [selectedDate, isAllTimeSelected]);
 
   // Sort data just before rendering to avoid redundancy
   const sortedCardData = [...(cardData || [])].sort(
     (a, b) => b.sleepScore - a.sleepScore
   );
-
 
   const handleSwitchChange = () => {
     setIsAllTimeSelected(!isAllTimeSelected);
@@ -137,19 +136,19 @@ export default function Home() {
               </div>
             </div>
           </div>
-         
-            {isAllTimeSelected ? (
-          <div className="flex justify-center my-4">
-            <h2 className="text-xl font-semibold">Top 6 Best Sleep Scores</h2>
-          </div>
-        ) : (
-          <div className="flex justify-center my-4">
-            <DatePickerWithPresets
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </div>
-        )}
+
+          {isAllTimeSelected ? (
+            <div className="flex justify-center my-4">
+              <h2 className="text-xl font-semibold">Top 6 Best Sleep Scores</h2>
+            </div>
+          ) : (
+            <div className="flex justify-center my-4">
+              <DatePickerWithPresets
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+              />
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {" "}
             {isLoading ? (
