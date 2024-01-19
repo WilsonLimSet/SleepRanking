@@ -13,7 +13,7 @@ export default function Terms() {
       <section className="my-6">
         <h2 className="text-xl font-semibold">1. Introduction</h2>
         <p>
-          Welcome to Sleep Ranking. These Terms of Service ("Terms") govern your
+          Welcome to Sleep Ranking. These Terms of Service (&quot;Terms&quot;) govern your
           access to and use of our website www.sleepranking.com and any related
           services provided by Sleep Ranking.
         </p>
@@ -80,7 +80,7 @@ export default function Terms() {
           6. Disclaimer of Warranties
         </h2>
         <p>
-          Our website and services are provided on an "as is" and "as available"
+          Our website and services are provided on an &quot;as is&quot; and &quot;as available&quot;
           basis. Sleep Ranking makes no warranties, express or implied,
           regarding the website and expressly disclaims any implied warranties
           of merchantability or fitness for a particular purpose.
