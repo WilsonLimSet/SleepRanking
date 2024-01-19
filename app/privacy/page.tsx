@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
         </section>
   
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">7. Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold mb-4">7. Children&apos;s Privacy</h2>
           <p>Our website is not intended for children under the age of 13, and we do not knowingly collect personal information from children under 13.</p>
         </section>
   
