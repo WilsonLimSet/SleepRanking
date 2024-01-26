@@ -1,13 +1,15 @@
 import axios from 'axios';
 import * as qs from 'querystring';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server'; // Import NextResponse as a value
 
-export async function POST(req: NextApiRequest, res: NextApiResponse): Promise<void> {
-    const { code } = req.query;
+export async function POST(req: NextRequest): Promise<NextResponse> {
+    const code = req.nextUrl.searchParams.get('code'); // Correctly accessing the 'code' parameter
 
-    if (typeof code !== 'string' || !code) {
-        res.status(400).json({ error: 'Authorization code is required' });
-        return;
+    if (!code) {
+        return new NextResponse(JSON.stringify({ error: 'Authorization code is required' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 
     try {
@@ -28,9 +30,14 @@ export async function POST(req: NextApiRequest, res: NextApiResponse): Promise<v
 
         // Store access_token and refresh_token in your database
 
-        res.status(200).json({ access_token, refresh_token });
-        console.log(access_token, refresh_token );
+        return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to exchange authorization code for tokens' });
+        return new NextResponse(JSON.stringify({ error: 'Failed to exchange authorization code for tokens' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
