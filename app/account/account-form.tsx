@@ -56,10 +56,6 @@ export default function AccountForm({ session }: { session: Session | null }) {
     setShowSyncOuraButton(value === "Oura Ring");
   };
 
-  
-
-  
-
   // Extract user from session
   const user = session?.user;
   const handleSyncOuraRing = () => {

@@ -1,8 +1,14 @@
 import axios from 'axios';
 import * as qs from 'querystring';
 import { NextRequest, NextResponse } from 'next/server'; // Import NextResponse as a value
+import { createClient } from "@/utils/supabase/client";
+import {
+    Session,
+    createClientComponentClient,
+  } from "@supabase/auth-helpers-nextjs";
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+
+export async function POST({ session }: { session: Session | null }, req: NextRequest): Promise<NextResponse> {
     const code = req.nextUrl.searchParams.get('code'); // Correctly accessing the 'code' parameter
 
     if (!code) {
@@ -30,6 +36,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const { access_token, refresh_token } = response.data;
 
         // Store access_token and refresh_token in your database
+        const supabase = createClient();
+        const user = session?.user;
+
+        const { data, error } = await supabase
+        .from('profiles')
+        .update({
+            access_token: response.data.access_token,
+            refresh_token: response.data.refresh_token
+        })
+        .eq("id", user?.id ?? "")
 
         return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
             status: 200,
