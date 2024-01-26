@@ -17,6 +17,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             qs.stringify({
                 grant_type: 'authorization_code',
                 code,
+                client_id: process.env.CLIENT_ID,
                 client_secret: process.env.CLIENT_SECRET, // Use environment variable
                 redirect_uri: 'https://www.sleepranking.com/api/oura'
             }), {
