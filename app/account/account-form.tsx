@@ -48,13 +48,24 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [country, setCountry] = useState<SelectMenuOption["value"]>("US");
 
+  const [showSyncOuraButton, setShowSyncOuraButton] = useState(false);
+
   const handleSelectSleepTracker = (value: string) => {
    
     setSleepTracker(value);
+    setShowSyncOuraButton(value === "Oura Ring");
   };
+
+  
+
+  
 
   // Extract user from session
   const user = session?.user;
+  const handleSyncOuraRing = () => {
+    // Redirect to Oura Ring OAuth URL
+    window.location.href = "https://cloud.ouraring.com/oauth/authorize?client_id=TAETWHK7S2EU45NG&scope=email+daily&redirect_uri=https%3A%2F%2Fwww.sleepranking.com%2F&response_type=code";
+  };
 
   // Fetch user profile data
   const getProfile = useCallback(async () => {
@@ -231,6 +242,18 @@ export default function AccountForm({ session }: { session: Session | null }) {
           </SelectContent>
         </Select>
       </div>
+
+       {/* Conditional rendering of the Sync Oura Ring button */}
+       {showSyncOuraButton && (
+        <div className="space-y-1 py-2">
+          <button
+            className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-md shadow-sm text-sm font-medium"
+            onClick={handleSyncOuraRing}
+          >
+            Sync Oura Ring
+          </button>
+        </div>
+      )}
 
       <div className="space-y-1 py-2">
         <label
