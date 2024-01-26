@@ -64,7 +64,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
   const user = session?.user;
   const handleSyncOuraRing = () => {
     // Redirect to Oura Ring OAuth URL
-    window.location.href =  "https://cloud.ouraring.com/oauth/authorize?client_id=TAETWHK7S2EU45NG&scope=email+daily&redirect_uri=https%3A%2F%2Fwww.sleepranking.com%2Fapi%2Foura&responstype=code";                                                                                                                                                     
+    window.location.href =  "https://cloud.ouraring.com/oauth/authorize?client_id=TAETWHK7S2EU45NG&scope=email+daily&redirect_uri=https%3A%2F%2Fwww.sleepranking.com%2Fapi%2Foura&responsetype=code";                                                                                                                                                     
                   
   };
 
