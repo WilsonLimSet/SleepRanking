@@ -36,6 +36,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         });
     } catch (error: any) {
         console.error((error as any).response.data); // Log the entire response from the Oura API
+        console.error(error); // Log the entire error object                                                                                                          
         return new NextResponse(JSON.stringify({ error: 'Failed to exchange authorization code for tokens' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
