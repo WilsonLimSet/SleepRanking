@@ -34,12 +34,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error(error);
         return new NextResponse(JSON.stringify({ error: 'Internal Server Error', details: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
     }
-    }
+    
 }
