@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as qs from 'querystring';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function(req: VercelRequest, res: VercelResponse): Promise<void> {
+export  async function POST(req: VercelRequest, res: VercelResponse): Promise<void> {
     const { code } = req.query;
 
     if (typeof code !== 'string' || !code) {
