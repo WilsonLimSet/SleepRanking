@@ -35,9 +35,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error) {
-        return new NextResponse(JSON.stringify({ error: 'Failed to exchange authorization code for tokens' }), {
+        console.error(error);
+        return new NextResponse(JSON.stringify({ error: 'Internal Server Error', details: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
+    }
     }
 }
