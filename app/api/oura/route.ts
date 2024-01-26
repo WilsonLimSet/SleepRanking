@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as qs from 'querystring';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export  async function POST(req: VercelRequest, res: VercelResponse): Promise<void> {
+export async function POST(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     const { code } = req.query;
 
     if (typeof code !== 'string' || !code) {
@@ -26,9 +26,10 @@ export  async function POST(req: VercelRequest, res: VercelResponse): Promise<vo
 
         const { access_token, refresh_token } = response.data;
 
-        // TODO: Store access_token and refresh_token in your database
+        // Store access_token and refresh_token in your database
 
         res.status(200).json({ access_token, refresh_token });
+        console.log(access_token, refresh_token );
     } catch (error) {
         res.status(500).json({ error: 'Failed to exchange authorization code for tokens' });
     }
