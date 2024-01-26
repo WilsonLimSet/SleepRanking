@@ -18,7 +18,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
                 grant_type: 'authorization_code',
                 code,
                 client_secret: process.env.CLIENT_SECRET, // Use environment variable
-                redirect_uri: 'https://www.sleepranking.com/'
+                redirect_uri: 'https://www.sleepranking.com/api/oura'
             }), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -35,11 +35,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error: any) {
-        console.error(error);
-        return new NextResponse(JSON.stringify({ error: 'Internal Server Error', details: error.message }), {
+        console.error((error as any).response.data); // Log the entire response from the Oura API
+        return new NextResponse(JSON.stringify({ error: 'Failed to exchange authorization code for tokens' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
     }
+    }
     
-}
+
