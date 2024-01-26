@@ -1,12 +1,13 @@
-require('dotenv').config();
-const axios = require('axios');
-const qs = require('querystring');
+import axios from 'axios';
+import * as qs from 'querystring';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-module.exports = async (req, res) => {
+export default async function(req: VercelRequest, res: VercelResponse): Promise<void> {
     const { code } = req.query;
 
-    if (!code) {
-        return res.status(400).json({ error: 'Authorization code is required' });
+    if (typeof code !== 'string' || !code) {
+        res.status(400).json({ error: 'Authorization code is required' });
+        return;
     }
 
     try {
@@ -14,7 +15,7 @@ module.exports = async (req, res) => {
             qs.stringify({
                 grant_type: 'authorization_code',
                 code,
-                client_secret: process.env.ClientSecret, // Use environment variable
+                client_secret: process.env.CLIENT_SECRET, // Use environment variable
                 redirect_uri: 'https://www.sleepranking.com/'
             }), {
                 headers: {
@@ -25,10 +26,10 @@ module.exports = async (req, res) => {
 
         const { access_token, refresh_token } = response.data;
 
-        // TODO: Store access_token and refresh_token in your Supabase database
+        // TODO: Store access_token and refresh_token in your database
 
         res.status(200).json({ access_token, refresh_token });
     } catch (error) {
         res.status(500).json({ error: 'Failed to exchange authorization code for tokens' });
     }
-};
+}
