@@ -1,16 +1,11 @@
 import axios from 'axios';
 import * as qs from 'querystring';
-import { NextRequest, NextResponse } from 'next/server'; // Import NextResponse as a value
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from "@/utils/supabase/client";
-import {
-    Session,
-    createClientComponentClient,
-  } from "@supabase/auth-helpers-nextjs";
 
-
-export async function POST({ session }: { session: Session | null }, req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest): Promise<NextResponse> {
     const code = req.nextUrl.searchParams.get('code'); // Correctly accessing the 'code' parameter
-
+    const supabase = createClient();
     if (!code) {
         return new NextResponse(JSON.stringify({ error: 'Authorization code is required' }), {
             status: 400,
@@ -33,19 +28,27 @@ export async function POST({ session }: { session: Session | null }, req: NextRe
             }
         );
 
-        const { access_token, refresh_token } = response.data;
+        const access_token = 'wrong'; // Declare access_token variable
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            console.error('Error fetching user data:', authError);
+            throw new Error('User not authenticated');
+        }
 
         // Store access_token and refresh_token in your database
-        const supabase = createClient();
-        const user = session?.user;
-
-        const { data, error } = await supabase
-        .from('profiles')
-        .update({
-            access_token: response.data.access_token,
-            refresh_token: response.data.refresh_token
-        })
-        .eq("id", user?.id ?? "")
+        const refresh_token = 'wrong'; // Declare refresh_token variable
+        const {error } = await supabase
+            .from("profiles")
+            .insert({
+                access_token: access_token,
+                refresh_token: refresh_token
+            })
+            .eq('id', user.id); // Use the user ID from the authenticated user
+        
+        if (error) {
+            console.error('Supabase update error:', error);
+            throw error;
+        }
 
         return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
             status: 200,
@@ -53,12 +56,10 @@ export async function POST({ session }: { session: Session | null }, req: NextRe
         });
     } catch (error: any) {
         console.error((error as any).response.data); // Log the entire response from the Oura API
-        console.error(error); // Log the entire error object                                                                                                          
+        console.error(error); // Log the entire error object
         return new NextResponse(JSON.stringify({ error: 'Failed to exchange authorization code for tokens' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
     }
-    }
-    
-
+}
