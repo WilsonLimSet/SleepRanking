@@ -30,14 +30,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         const { access_token, refresh_token } = response.data;
         const supabase = createClient(); // Initialize Supabase client
+        const {data: { user },} = await supabase.auth.getUser();
+        const userId = user?.id;
 
         console.log(response.data);
         console.log(access_token);
         console.log(refresh_token);
-        const { data, error } = await supabase.from("profiles").insert({
+        const { error } = await supabase.from("profiles").insert({
             access_token: access_token,
             refresh_token: refresh_token,
-        });
+        }).eq("user_id", userId);
         if (error) {
             console.error('Supabase insert error:', error);
             // Handle the error appropriately
