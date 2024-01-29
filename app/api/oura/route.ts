@@ -34,20 +34,32 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
 
     // Store access_token and refresh_token in your database
-    const { access_token, refresh_token } = response.data;
-    const supabase = createClient();
-    const { error } = await supabase.from("profiles").insert({
-      access_token: access_token,
-      refresh_token: refresh_token,
-    });
+    if (response && response.data) {
+      const { access_token, refresh_token } = response.data;
+      const supabase = createClient();
+      const { error } = await supabase.from("profiles").insert({
+        access_token: access_token,
+        refresh_token: refresh_token,
+      });
 
-    if (error) {
-      throw error;
+      if (error) {
+        throw error;
+      }
+      return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new NextResponse(
+        JSON.stringify({
+          error: "Unexpected response format from the authentication service",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
-    return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
   } catch (error: any) {
     console.error((error as any).response.data); // Log the entire response from the Oura API
     console.error(error); // Log the entire error object
