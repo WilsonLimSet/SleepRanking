@@ -30,23 +30,23 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         const { access_token, refresh_token } = response.data;
         const supabase = createClient(); // Initialize Supabase client
-        const {data: { user },} = await supabase.auth.getUser();
-        const userId = user?.id;
+        const { data: { user }} = await supabase.auth.getUser();
+      
+        if (!user) {
+            console.error('User is null');
+            return new NextResponse(JSON.stringify({ error: 'User is null' }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
-        console.log(response.data);
-        console.log(access_token);
-        console.log(refresh_token);
         const { error } = await supabase.from("profiles").insert({
             access_token: access_token,
             refresh_token: refresh_token,
-        }).eq("user_id", userId);
+        }).eq("user_id", user.id);
         if (error) {
             console.error('Supabase insert error:', error);
-            // Handle the error appropriately
         }
-
-
-        // Store access_token and refresh_token in your database
 
         return new NextResponse(JSON.stringify({ access_token, refresh_token }), {
             status: 200,
