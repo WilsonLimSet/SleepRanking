@@ -1,3 +1,4 @@
+// getUserData.js
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
@@ -5,19 +6,15 @@ import { cookies } from "next/headers";
 export const getUserData = async () => {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
-  let userData = null;
-  
+
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user) {
-      userData = user;
-    }
+    return user;  // directly return the user object
   } catch (error) {
     console.error("Error fetching user:", error);
+    return null;
   }
-
-  return { props: { userData} };
 };

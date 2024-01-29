@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as qs from 'querystring';
 import { createClient } from "@/utils/supabase/client"; // Make sure this path is correct
 import { NextRequest, NextResponse } from 'next/server'; // Import NextResponse as a value
+import { getUserData } from '@/app/components/userData';
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
     const code = req.nextUrl.searchParams.get('code'); // Correctly accessing the 'code' parameter
@@ -29,8 +30,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
 
         const { access_token, refresh_token } = response.data;
-        const supabase = createClient(); // Initialize Supabase client
-        const { data: { user }} = await supabase.auth.getUser();
+        const user = await getUserData();  // Get the user data\
+        const supabase = createClient();
+
+
       
         if (!user) {
             console.error('User is null');
