@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as qs from 'querystring';
+import { createClient } from "@/utils/supabase/client"; // Make sure this path is correct
 import { NextRequest, NextResponse } from 'next/server'; // Import NextResponse as a value
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -28,9 +29,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         );
 
         const { access_token, refresh_token } = response.data;
+        const supabase = createClient(); // Initialize Supabase client
+
         console.log(response.data);
         console.log(access_token);
         console.log(refresh_token);
+        const { data, error } = await supabase.from("profiles").insert({
+            access_token: access_token,
+            refresh_token: refresh_token,
+        });
+        if (error) {
+            console.error('Supabase insert error:', error);
+            // Handle the error appropriately
+        }
 
 
         // Store access_token and refresh_token in your database
